@@ -29,6 +29,11 @@ html,body{
   width: 100%;
   height: 100%;
 }
+.ol-zoom-extent button{
+    background: url('assets/home.png')no-repeat 50% 50%;
+    background-size: 20px 20px;
+    background-color:beige
+}
 </style>
 
 

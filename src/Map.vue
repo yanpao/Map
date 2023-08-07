@@ -3,6 +3,7 @@
         <div id="mapDiv"></div> <!-- create a div element with id "map" to hold the map -->
         <div id="mouse-position"></div>
         <button id="extentButton" @click="extenttest">Extent</button>
+        <span ></span>
     </div>
   </template>
   
@@ -14,7 +15,7 @@ import TileLayer from 'ol/layer/WebGLTile.js'; // import TileLayer class from Op
 import OSM from 'ol/source/OSM'; // import OSM class from OpenLayers
 import MousePosition from 'ol/control/MousePosition.js';
 import {createStringXY} from 'ol/coordinate.js';
-import {defaults as defaultControls} from 'ol/control.js';
+import {ScaleLine,ZoomToExtent,defaults as defaultControls} from 'ol/control.js';
 import {transform,transformExtent} from 'ol/proj.js';
 
 var map;
@@ -42,8 +43,28 @@ mounted() {
         target: document.getElementById('mouse-position'),
     });
 
+    const scaleControl = new ScaleLine({
+        units: 'metric',
+        bar: true,
+        steps: 1,
+        text: true,
+        minWidth: 140,
+    });
+
     map = new Map({ // create a new Map instance
-        controls: defaultControls().extend([mousePositionControl]),
+        controls: defaultControls().extend([
+            mousePositionControl,
+            scaleControl,
+            new ZoomToExtent({
+                extent: transformExtent([
+                    113.67358849449846,
+                    30.186913166337035,
+                    115.06549936023082,
+                    30.792250483764136
+                ], 'EPSG:4326','EPSG:3857'),
+                label:''
+            })
+        ]),
         target: 'mapDiv', // set the target element to the "map" div
         layers: [
             new TileLayer({
@@ -52,7 +73,7 @@ mounted() {
         ],
         view: new View({
             center: transform([114, 30], 'EPSG:4326', 'EPSG:3857'),
-            zoom: 10,
+            zoom: 4,
         })
     });
 },
@@ -61,6 +82,7 @@ methods:{
         var extent = map.getView().calculateExtent(map.getSize())
         console.log(transformExtent(extent, 'EPSG:3857', 'EPSG:4326'))
         console.log(map.getView().getProjection().getCode())
+        console.log(map.getView().getResolution())
     }
 }
 };
@@ -68,9 +90,12 @@ methods:{
 
 <style scoped>
 .container {
-  position: relative;
-  width: 100%;
+    position: relative;
+    width: 100%;
     height: 100%;
+    justify-content: center;
+    align-items: center;
+    display: flex;
 }
 
 #mapDiv{
@@ -82,8 +107,10 @@ methods:{
 #mouse-position{
     position: absolute;
     bottom: 0; /* Position div2 at the bottom */
-    left: 20px; /* Position div2 at the left */
+    /*left: 20px; /* Position div2 at the left */
     z-index: 1;
+    cursor: pointer;
+    background-color: rgb(249, 244, 237);
 }
 
 #extentButton{
