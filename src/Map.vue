@@ -13,10 +13,12 @@ import Map from 'ol/Map'; // import Map class from OpenLayers
 import View from 'ol/View'; // import View class from OpenLayers
 import TileLayer from 'ol/layer/WebGLTile.js'; // import TileLayer class from OpenLayers
 import OSM from 'ol/source/OSM'; // import OSM class from OpenLayers
+import XYZ from 'ol/source/XYZ.js';
 import MousePosition from 'ol/control/MousePosition.js';
 import {createStringXY} from 'ol/coordinate.js';
 import {ScaleLine,ZoomToExtent,defaults as defaultControls} from 'ol/control.js';
 import {transform,transformExtent} from 'ol/proj.js';
+import axios from 'axios';
 
 var map;
 export default {
@@ -69,7 +71,13 @@ mounted() {
         layers: [
             new TileLayer({
                 source: new OSM()
-            })
+            }),
+            // new TileLayer({
+            //     source: new XYZ({
+            //         url: 'https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=kR13HSIgTbWiBaHkhiL8',
+            //         tileSize: 512,
+            //     }),
+            // }),
         ],
         view: new View({
             center: transform([114, 30], 'EPSG:4326', 'EPSG:3857'),
@@ -79,10 +87,20 @@ mounted() {
 },
 methods:{
     extenttest(){
-        var extent = map.getView().calculateExtent(map.getSize())
-        console.log(transformExtent(extent, 'EPSG:3857', 'EPSG:4326'))
-        console.log(map.getView().getProjection().getCode())
-        console.log(map.getView().getResolution())
+        var mapExtent = transformExtent(map.getView().calculateExtent(map.getSize()),'EPSG:3857', 'EPSG:4326')
+        const extent = {
+            project: 'EPSG:4326',
+            minX: mapExtent[0],
+            minY: mapExtent[1],
+            maxX: mapExtent[2],
+            maxY: mapExtent[3]
+        }
+        console.log(JSON.stringify(extent))
+        const apiUrl = "http://localhost:8080/extent/send"
+        axios.post(apiUrl, extent)
+        .then(response => {
+            console.log(response.data)
+        })
     }
 }
 };
