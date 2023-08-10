@@ -2,7 +2,7 @@
     <div class="container">
         <div id="mapDiv"></div> <!-- create a div element with id "map" to hold the map -->
         <div id="mouse-position"></div>
-        <button id="extentButton" @click="extenttest">Extent</button>
+        <Button id="extentButton" label="Extent" @click="extenttest"/>
         <span ></span>
     </div>
   </template>

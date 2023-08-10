@@ -10,7 +10,7 @@ import MapView from './Map.vue'
 export default {
   name: 'App',
   components: {
-    MapView
+    MapView,
   }
 }
 </script>
