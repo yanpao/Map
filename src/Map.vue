@@ -1,9 +1,29 @@
 <template>
     <div class="container">
-        <div id="mapDiv"></div> <!-- create a div element with id "map" to hold the map -->
-        <div id="mouse-position"></div>
-        <Button id="extentButton" label="Extent" @click="extenttest"/>
-        <span ></span>
+        <Menubar :model="items" style="height: 30px; width:100%;background-color:hsla(0, 92%, 48%, 0);" >
+            <template #start>
+                <img alt="logo" src="./assets/home.svg" height="30" class="mr-2" />
+            </template>
+            <template #end>
+                <InputText placeholder="Search" type="text" />
+            </template>
+        </Menubar>
+
+        <Splitter style="height: 100%; width: 100%;">
+            <SplitterPanel class="flex align-items-center justify-content-center" :size="15" v-show="true"> Panel 1 </SplitterPanel>
+            <SplitterPanel :size="85">
+                <Splitter>
+                    <SplitterPanel class="flex align-items-center justify-content-center" :size="80">
+                        <div id="mapDiv"></div>
+                        <div id="mouse-position"></div>
+                    <Button id="extentButton" label="Extent" @click="extenttest"/>
+                    </SplitterPanel>
+                    <SplitterPanel class="flex align-items-center justify-content-center" :size="20" v-show="false"> Panel 3 </SplitterPanel>
+                </Splitter>
+            </SplitterPanel>
+            
+            <!--  -->
+        </Splitter>
     </div>
   </template>
   
@@ -96,7 +116,7 @@ methods:{
             maxY: mapExtent[3]
         }
         console.log(JSON.stringify(extent))
-        const apiUrl = "http://localhost:8080/extent/send"
+        const apiUrl = "http://localhost:8000/extent/send"
         axios.post(apiUrl, extent)
         .then(response => {
             console.log(response.data)
@@ -114,6 +134,7 @@ methods:{
     justify-content: center;
     align-items: center;
     display: flex;
+    flex-direction: column;
 }
 
 #mapDiv{
